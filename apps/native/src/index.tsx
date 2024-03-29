@@ -1,19 +1,20 @@
 import { StyleSheet, Text, View } from "react-native"
 import { StatusBar } from "expo-status-bar"
-import { Button } from "@repo/ui"
+import { Button, Marquee } from "@repo/ui"
 
 const Index = () => {
   return (
     <View style={styles.container}>
+      <StatusBar style="auto" />
       <Text style={styles.header}>Native</Text>
       <Button
         onClick={() => {
           console.log("Pressed!")
           alert("Pressed!")
         }}
-        text="Boop"
+        text="Boop222"
       />
-      <StatusBar style="auto" />
+      <Marquee />
     </View>
   )
 }
