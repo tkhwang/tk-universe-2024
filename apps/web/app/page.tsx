@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import { Button } from "@repo/ui";
+import { Button } from "@repo/ui"
 
-import styles from "../styles/index.module.css";
+import styles from "../styles/index.module.css"
 
 export default function Web() {
   return (
@@ -10,5 +10,5 @@ export default function Web() {
       <h1>Web</h1>
       <Button onClick={() => console.log("Pressed!")} text="Boop" />
     </div>
-  );
+  )
 }
