@@ -12,6 +12,7 @@
     "@types/react": "^18.2.46",
     "@types/react-native": "^0.73.0",
     "@repo/typescript-config": "*",
+    "@repo/eslint-config-custom": "*",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3"
   },
