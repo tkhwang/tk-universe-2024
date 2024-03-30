@@ -1,20 +1,19 @@
-import { StyleSheet, Text, View } from "react-native"
+import { SafeAreaView, StyleSheet, Text, View } from "react-native"
 import { StatusBar } from "expo-status-bar"
-import { Button, Marquee } from "@repo/ui"
+import Marquee from "@repo/ui/src/Marquee"
 
 const Index = () => {
+  const data = ["AAPL", "GOOGL", "GOOG", "MSFT", "FB", "TSM", "INTC", "ORCL", "CSCO"].map((item) => ({
+    title: item,
+    price: parseInt((Math.random() * 1000).toFixed(2), 10),
+    change: parseInt((Math.random() * 100).toFixed(2), 10),
+    isGain: Math.floor(Math.random() * 10).toFixed(2) > 5,
+  }))
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <Text style={styles.header}>Native</Text>
-      <Button
-        onClick={() => {
-          console.log("Pressed!")
-          alert("Pressed!")
-        }}
-        text="Boop222"
-      />
-      <Marquee />
+      <Marquee data={data} />
     </View>
   )
 }
