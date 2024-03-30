@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react"
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { Dimensions, FlatList, StyleSheet } from "react-native"
 import MarqueeItem, { IMarqueItem } from "./MarqueeItem"
 
@@ -12,6 +12,10 @@ interface Props {
 const StockMarquee = ({ data }: Props) => {
   const [currentPosition, setCurrentPosition] = useState(0)
   const tickerRef = useRef<FlatList<IMarqueItem> | null>(null)
+
+  const wrappedData = useMemo(() => {
+    return [...data, ...data]
+  }, [data])
 
   const renderItem = useCallback(
     (item: IMarqueItem, index: number) => (
@@ -29,22 +33,28 @@ const StockMarquee = ({ data }: Props) => {
     []
   )
 
-  const scrolling = useCallback(() => {
+  const scrolling = () => {
+    let localCurrentPosition = currentPosition
+
+    if (localCurrentPosition < 0) localCurrentPosition = 0
+
     if (data.length > NO_PER_SCREEN) {
-      const position = currentPosition + 4
+      const position = currentPosition + 1
       tickerRef.current?.scrollToOffset({ offset: position, animated: false })
       const maxOffset = data.length * itemWidth
-      if (currentPosition > maxOffset) {
-        tickerRef.current?.scrollToOffset({ offset: 0, animated: false })
-        setCurrentPosition(0)
+
+      if (localCurrentPosition > maxOffset) {
+        const offset = localCurrentPosition - maxOffset
+        tickerRef.current?.scrollToOffset({ offset, animated: false })
+        setCurrentPosition(offset)
       } else {
         setCurrentPosition(position)
       }
     }
-  }, [currentPosition, data.length])
+  }
 
   useEffect(() => {
-    const activeInterval = setInterval(scrolling, 32)
+    const activeInterval = setInterval(scrolling, 0.1)
 
     return () => clearInterval(activeInterval)
   }, [scrolling])
@@ -52,13 +62,14 @@ const StockMarquee = ({ data }: Props) => {
   return (
     <FlatList
       ref={tickerRef}
+      initialNumToRender={4}
       getItemLayout={(_, index) => ({
         length: data.length,
         offset: itemWidth * index,
         index,
       })}
       showsHorizontalScrollIndicator={false}
-      data={data}
+      data={wrappedData}
       renderItem={({ item, index }) => renderItem(item, index)}
       horizontal
       style={styles.wrapper}
