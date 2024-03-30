@@ -2,12 +2,15 @@ import React, { Component } from "react"
 import { StyleSheet, Text, View } from "react-native"
 import PropTypes from "prop-types"
 
-interface Props {
+export interface IMarqueItem {
   title: string
   price: number
   change: number
   isGain: boolean
   itemWidth: number
+}
+
+interface Props extends IMarqueItem {
   style: any
 }
 

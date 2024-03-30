@@ -1,22 +1,20 @@
-import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native"
-import MarqueeItem from "./MarqueeItem"
+import React, { useState, useEffect, useRef, useCallback } from "react"
+import { Dimensions, FlatList, StyleSheet } from "react-native"
+import MarqueeItem, { IMarqueItem } from "./MarqueeItem"
 
-const itemWidth = Dimensions.get("window").width / 5
-
-export type IMarqueItem = {
-  title: string
-  price: number
-  change: number
-  isGain: boolean
-}
+const NO_PER_SCREEN = 5
+const itemWidth = Dimensions.get("window").width / NO_PER_SCREEN
 
 interface Props {
   data: IMarqueItem[]
 }
 
-export default function Marquee({ data }: Props) {
-  const renderItem = (item: IMarqueItem, index: number) => {
-    return (
+const StockMarquee = ({ data }: Props) => {
+  const [currentPosition, setCurrentPosition] = useState(0)
+  const tickerRef = useRef<FlatList<IMarqueItem> | null>(null)
+
+  const renderItem = useCallback(
+    (item: IMarqueItem, index: number) => (
       <MarqueeItem
         title={item.title}
         price={item.price}
@@ -27,16 +25,38 @@ export default function Marquee({ data }: Props) {
           marginStart: index === 0 ? 16 : 0,
         }}
       />
-    )
-  }
+    ),
+    []
+  )
+
+  const scrolling = useCallback(() => {
+    if (data.length > NO_PER_SCREEN) {
+      const position = currentPosition + 4
+      tickerRef.current?.scrollToOffset({ offset: position, animated: false })
+      const maxOffset = data.length * itemWidth
+      if (currentPosition > maxOffset) {
+        tickerRef.current?.scrollToOffset({ offset: 0, animated: false })
+        setCurrentPosition(0)
+      } else {
+        setCurrentPosition(position)
+      }
+    }
+  }, [currentPosition, data.length])
+
+  useEffect(() => {
+    const activeInterval = setInterval(scrolling, 32)
+
+    return () => clearInterval(activeInterval)
+  }, [scrolling])
 
   return (
     <FlatList
-      // getItemLayout={(_, index) => ({
-      //   gth,
-      //   offset: itemWidth * index,
-      //   index,
-      // })}
+      ref={tickerRef}
+      getItemLayout={(_, index) => ({
+        length: data.length,
+        offset: itemWidth * index,
+        index,
+      })}
       showsHorizontalScrollIndicator={false}
       data={data}
       renderItem={({ item, index }) => renderItem(item, index)}
@@ -54,3 +74,5 @@ const styles = StyleSheet.create({
     flexGrow: 0,
   },
 })
+
+export default StockMarquee
